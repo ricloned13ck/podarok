@@ -22,7 +22,8 @@ def is_owner(message: types.Message) -> bool:
 keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="Запрос")],
-        [KeyboardButton(text="Отзыв")]
+        [KeyboardButton(text="Отзыв")],
+        [KeyboardButton(text='Обнуление')]
     ],
     resize_keyboard=True
 )
@@ -50,7 +51,8 @@ async def request_handler(message: types.Message):
         keyboard=[
             [KeyboardButton(text="Референс щас отправлю")],
             [KeyboardButton(text="Референса не будет, сам выбирай")],
-            [KeyboardButton(text='Назад')]
+            [KeyboardButton(text='Назад')],
+            [KeyboardButton(text='Обнуление')]
         ],
         resize_keyboard=True
     )
@@ -71,6 +73,17 @@ async def back_to_start(message: types.Message):
         return
     await track_action(message.from_user.id, "Назад")
     await message.answer("Вы вернулись в главное меню.", reply_markup=keyboard)
+
+
+
+@dp.message(lambda message: message.text == "Обнуление")
+async def back_to_start(message: types.Message):
+    if not is_owner(message):
+        return
+    await track_action(message.from_user.id, "Обнуление")
+    await message.answer("Вы вернулись в главное меню.", reply_markup=keyboard)
+    waiting_for_reference.clear()
+    waiting_for_feedback.clear()
 
 
 @dp.message(lambda message: message.from_user.id in waiting_for_feedback)
